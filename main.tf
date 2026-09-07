@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "google" {
-  project = "<nube-practica-1-507220>"
+  project = "<507220>"
   region  = "us-central1"
   zone    = "us-central1-a"
 }
