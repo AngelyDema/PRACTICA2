@@ -146,3 +146,67 @@ Untracked files:
         .terraform.lock.hcl
 
 nothing added to commit but untracked files present (use "git add" to track)
+
+#EVIDENCIA 2: 
+
+2. IP 
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform output ip_externa
+"34.71.41.101"
+
+3. CURL
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$  curl -m 8 http://$(terraform output -raw ip_externa)
+<h1><identificacion></h1><p>Servida desde Terraform por web-tf</p>
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ 
+
+
+#EVIDENCIA 3: 
+
+TERRAFORM APPLY: 
+
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform apply
+google_compute_firewall.permitir_http: Refreshing state... [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
+google_compute_instance.web: Refreshing state... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ip_externa = "34.71.41.101"
+
+GCLOUD COMPUTE INSTANCES ADD-TAGS  WEB TF
+
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ gcloud compute instances add-tags web-tf --tags=prueba-manual
+Did you mean zone [us-east1-b] for instance: [web-tf] (Y/n)?  n
+
+No zone specified. Using zone [us-central1-a] for instance: [web-tf].
+Updated [https://www.googleapis.com/compute/v1/projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf].
+
+TERRAFORM PLAN: 
+
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$  terraform plan
+google_compute_firewall.permitir_http: Refreshing state... [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
+google_compute_instance.web: Refreshing state... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # google_compute_instance.web will be updated in-place
+  ~ resource "google_compute_instance" "web" {
+        id                      = "projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf"
+        name                    = "web-tf"
+      ~ tags                    = [
+          - "prueba-manual",
+            "servidor-web",
+        ]
+        # (21 unchanged attributes hidden)
+
+        # (4 unchanged blocks hidden)
+    }
+
+Plan: 0 to add, 1 to change, 0 to destroy.
