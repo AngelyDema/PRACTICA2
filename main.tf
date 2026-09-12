@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "google" {
-  project = "<nube-practica-1-507220>"
+  project = "<cloudshell-15582>"
   region  = "us-central1"
   zone    = "us-central1-a"
 }
