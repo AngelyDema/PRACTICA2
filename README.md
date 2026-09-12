@@ -118,3 +118,31 @@ Terraform will perform the following actions:
 
 Plan: 2 to add, 0 to change, 0 to destroy.
 
+#EVIDENCIA 1.2: Terraform apply
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+google_compute_firewall.permitir_http: Creating...
+google_compute_instance.web: Creating...
+google_compute_firewall.permitir_http: Still creating... [10s elapsed]
+google_compute_instance.web: Still creating... [10s elapsed]
+google_compute_firewall.permitir_http: Creation complete after 11s [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
+google_compute_instance.web: Still creating... [20s elapsed]
+google_compute_instance.web: Creation complete after 28s [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+#EVIDENCIA 1.3: Git status
+
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .terraform.lock.hcl
+
+nothing added to commit but untracked files present (use "git add" to track)
