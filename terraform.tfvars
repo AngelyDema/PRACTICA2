@@ -1,1 +1,1 @@
-proyecto = "nube-practica-1-507220"
+proyecto = nube-practica-1-507220
