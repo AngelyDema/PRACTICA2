@@ -210,3 +210,43 @@ Terraform will perform the following actions:
     }
 
 Plan: 0 to add, 1 to change, 0 to destroy.
+
+#EVIDENCIA 4: 
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform apply -var tipo_maquina=e2-small
+google_compute_firewall.permitir_http: Refreshing state... [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
+google_compute_instance.web: Refreshing state... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # google_compute_instance.web will be updated in-place
+  ~ resource "google_compute_instance" "web" {
+        id                      = "projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf"
+      ~ machine_type            = "e2-micro" -> "e2-small"
+        name                    = "web-tf"
+        tags                    = [
+            "servidor-web",
+        ]
+        # (20 unchanged attributes hidden)
+
+        # (4 unchanged blocks hidden)
+    }
+
+Plan: 0 to add, 1 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+google_compute_instance.web: Modifying... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
+╷
+│ Error: Changing the machine_type, min_cpu_platform, service_account, enable_display, shielded_instance_config, scheduling.node_affinities, scheduling.max_run_duration or network_interface.[#d].(network/subnetwork/subnetwork_project) or advanced_machine_features on a started instance requires stopping it. To acknowledge this, please set allow_stopping_for_update = true in your config. You can also stop it by setting desired_status = "TERMINATED", but the instance will not be restarted after the update.
+│ 
+│   with google_compute_instance.web,
+│   on main.tf line 29, in resource "google_compute_instance" "web":
+│   29: resource "google_compute_instance" "web" {
+│ 
