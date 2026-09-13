@@ -76,4 +76,21 @@ EVIDENCIA IP:
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$  terraform output ip_externa
 "34.71.75.158"
 
+EVIDENCIA 5: 
 
+Destroy complete! Resources: 2 destroyed.
+
+real    0m25.827s
+user    0m5.658s
+sys     0m0.854s
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ip_externa = "34.71.75.158"
+
+real    0m41.088s
+user    0m4.818s
+sys     0m0.606s
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ 
