@@ -1,7 +1,25 @@
 # Práctica 2 NUBE: Terraform
 ## Angely Sofia Pino Gonzalez – 1152315 Jhan Ávila Torres – 1152490
 
-## Evdencia 1.1:
+## Qué se construyó
+
+```mermaid
+flowchart LR
+  repo["Repositorio<br>main.tf y compañía"] -- terraform apply --> vm
+  repo -- terraform init -migrate-state --> bucket
+  subgraph gcp["Proyecto de Google Cloud"]
+    fw["permitir-http"] --> vm["web-tf"]
+  end
+  subgraph gcs["Cloud Storage"]
+    bucket["tfstate-nube-practica-1-507220<br>default.tfstate"]
+  end
+```
+
+## Evidencias
+
+### Fase 1. Escribir y aplicar
+
+## Evidencia 1.1:
 
 ```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform plan
@@ -309,3 +327,101 @@ sys     0m0.606s
 | `gcloud` (Práctica 1, fase 5) | `real 0m18.098s` |
 | Terraform (hoy) | `real 0m41.088s` | 
 
+
+## Evidencia 6: 
+ 
+### Terraform state list (leído desde el bucket):
+```
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform state list
+google_compute_firewall.permitir_http
+google_compute_instance.web
+```
+ 
+### Gcloud storage ls:
+```
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ gcloud storage ls gs://tfstate-nube-practica-1-507220/practica-2/
+gs://tfstate-nube-practica-1-507220/practica-2/default.tfstate
+```
+ 
+### Terraform plan (No changes):
+```
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform plan
+google_compute_firewall.permitir_http: Refreshing state... [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
+google_compute_instance.web: Refreshing state... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
+ 
+No changes. Your infrastructure matches the configuration.
+ 
+Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
+```
+ 
+## Evidencia 7: 
+ 
+### Terraform destroy:
+```
+<< FALTA: pega aquí la salida completa de "terraform destroy", desde que pide confirmar con "yes" hasta "Destroy complete! Resources: 2 destroyed." >>
+```
+ 
+### Terraform state list (vacío):
+```
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform state list
+```
+ 
+### Listas de gcloud (vacías):
+```
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ gcloud compute instances list
+Listed 0 items.
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ gcloud compute disks list
+Listed 0 items.
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ gcloud compute addresses list
+Listed 0 items.
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ gcloud compute firewall-rules list --filter="name=permitir-http"
+ 
+To show all fields of the firewall, please show in JSON format: --format=json
+To show all fields in table format, please see the examples in --help.
+```
+ 
+### Git log --oneline:
+```
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ git pull
+Already up to date.
+jhan_4_fran_t@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ git log --oneline
+10bf5b6 (HEAD -> main, origin/main, origin/HEAD) Evidencia 6
+1e358c6 Limpiar main.tf removiendo los comentarios de evidencia
+0ced9c2 Estado en Cloud Storage
+80b69c0 acomodando formato para que se vea más bonito :3
+097a905 .
+11e7013 "Variables y autorización para apagar la máquina
+d203255 add:   allow_stopping_for_update = true
+0f93092 .
+d964f49 .
+db13924 .
+2260882 evidencia 3
+751b9d0 add outpus.tf
+a492173 Máquina y regla de cortafuegos en Terraform
+1f4d195 .
+46f296d id
+bec429f .
+bba0d4d correccion
+f84b024 id
+996fe83 id del proyecto
+b1493c2 Añadir main.tf
+6165011 Añadir arranque.ssh
+888b2f0 Inicializar repositorio
+```
+ 
+### Informe de facturación:
+Captura guardada en `evidencias/Evidencia 7.png`.
+ 
+## Respuestas breves
+ 
+### 1. Si en la fase 3 se hubiera creado a mano una máquina web-manual en vez de una etiqueta, ¿qué habría propuesto terraform plan? ¿Y qué habría hecho terraform destroy?
+ 
+Nada, en los dos casos. Terraform no compara el código contra "todo lo que existe en el proyecto"; compara el código contra su estado, y el estado contra la realidad. `web-manual` no está declarada en ningún `.tf` ni tiene una entrada en `terraform.tfstate`, así que para Terraform simplemente no existe: es invisible, no un error ni una diferencia. `terraform plan` no diría nada sobre ella, y `terraform destroy` tampoco la tocaría, porque destroy solo elimina lo que aparece en el estado. Es distinto del caso de la etiqueta manual de la evidencia 3: ahí la deriva ocurrió sobre un recurso que ya estaba en el estado (`web-tf`), así que Terraform sí tenía con qué comparar el atributo `tags`. Una máquina nueva creada por fuera nunca entra en esa comparación porque no hay ninguna entrada de estado que la represente; sobreviviría indefinidamente hasta que alguien la borre a mano o la traiga al estado con `terraform import`.
+ 
+### 2. ¿Por qué el bucket del estado no está en main.tf? ¿Qué pasaría si se destruyera estando declarado ahí?
+ 
+Es un problema de dependencia circular: para que Terraform guarde el estado de una operación necesita un lugar donde escribirlo antes de ejecutar esa operación. Si el bucket estuviera declarado como recurso en el mismo `main.tf` que lo usa como backend, la primera vez que se corriera `terraform apply` no habría ningún bucket todavía donde guardar el estado que registra la creación de ese mismo bucket. Por eso se crea una sola vez a mano, fuera de Terraform. Si el bucket sí estuviera declarado y alguien ejecutara `terraform destroy`, Terraform destruiría también el bucket, porque destroy elimina todo lo que hay en el estado, y ese bucket es precisamente donde vive el archivo de estado que la operación está usando en ese momento: se estaría borrando el almacenamiento del propio proceso mientras el proceso todavía lo necesita para terminar de registrar qué se destruyó. El resultado más probable es un estado corrupto o inaccesible y un backend roto que ya no se puede leer en el siguiente `init`.
+ 
+### 3. Con los precios de lista de la calculadora de Google Cloud, ¿cuánto costaría un mes encendida, cuánto costó durante la práctica, y qué sigue costando después del destroy?
+ 
+*(Para este punto conviene meter los datos reales del proyecto en la [calculadora oficial de Google Cloud](https://cloud.google.com/products/calculator): una `e2-micro` en `us-central1` con disco de arranque estándar, y el tiempo real que estuvo encendida según las evidencias 5 y 7.)* Un mes completo con esa máquina encendida ronda unos pocos dólares al precio de lista sin descuentos, aunque `e2-micro` en `us-central1` está dentro del nivel siempre gratuito de Google (una instancia al mes, con condiciones), así que en un proyecto nuevo el costo real puede terminar en $0. Durante la práctica la máquina estuvo encendida apenas los minutos que duraron los `apply`/`destroy` de las evidencias, muy por debajo de un mes completo: el costo real es prácticamente cero. El único recurso que sigue existiendo después del `destroy` es el bucket de Cloud Storage con `default.tfstate`; un archivo de unos pocos kilobytes en Standard Storage cuesta una fracción de centavo al mes, así que no es perceptible en la factura. Se conserva a propósito: es el punto de partida (el estado y el bucket) para la próxima práctica.
