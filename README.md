@@ -1,10 +1,13 @@
-Angely Sofia Pino Gonzalez 1152315
-Jhan Ávila Torres 1152490
+# Práctica 2 NUBE: Terraform
+## Angely Sofia Pino Gonzalez – 1152315 Jhan Ávila Torres – 1152490
 
-#Evdencia 1:
+## Evdencia 1.1:
 
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform plan
 
+```
+```
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following
 symbols:
   + create
@@ -117,8 +120,14 @@ Terraform will perform the following actions:
     }
 
 Plan: 2 to add, 0 to change, 0 to destroy.
+```
 
-#EVIDENCIA 1.2: Terraform apply
+*Explicación de que hace Terraform plan: primeramente, terraform plan todavía no aplica nada, hasta no darle "terraform apply", con terraform apply compara lo que hay en el código tf, lo que tiene la máquina y el state en terraform.tfstate para generar el plan de acción, segundo, en ese plan de acción nos muestra qué se va a crear, destruir o modificar, en nuestro caso dide 2 to add porque no existía antes, se está creando desde cero*
+
+
+## EVIDENCIA 1.2: Terraform apply
+
+```
 Do you want to perform these actions?
   Terraform will perform the actions described above.
   Only 'yes' will be accepted to approve.
@@ -134,9 +143,11 @@ google_compute_instance.web: Still creating... [20s elapsed]
 google_compute_instance.web: Creation complete after 28s [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
 
 Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+```
 
-#EVIDENCIA 1.3: Git status
+## EVIDENCIA 1.3: Git status
 
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ git status
 On branch main
 Your branch is up to date with 'origin/main'.
@@ -146,23 +157,29 @@ Untracked files:
         .terraform.lock.hcl
 
 nothing added to commit but untracked files present (use "git add" to track)
+```
 
-#EVIDENCIA 2: 
 
-2. IP 
+## EVIDENCIA 2: 
+
+### IP:
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform output ip_externa
 "34.71.41.101"
+```
 
-3. CURL
+### CURL:
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$  curl -m 8 http://$(terraform output -raw ip_externa)
 <h1><identificacion></h1><p>Servida desde Terraform por web-tf</p>
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ 
+```
 
+## EVIDENCIA 3: 
 
-#EVIDENCIA 3: 
+### TERRAFORM APPLY: 
 
-TERRAFORM APPLY: 
-
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform apply
 google_compute_firewall.permitir_http: Refreshing state... [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
 google_compute_instance.web: Refreshing state... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
@@ -176,17 +193,19 @@ Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
 Outputs:
 
 ip_externa = "34.71.41.101"
+```
 
-GCLOUD COMPUTE INSTANCES ADD-TAGS  WEB TF
-
+### GCLOUD COMPUTE INSTANCES ADD-TAGS  WEB TF
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ gcloud compute instances add-tags web-tf --tags=prueba-manual
 Did you mean zone [us-east1-b] for instance: [web-tf] (Y/n)?  n
 
 No zone specified. Using zone [us-central1-a] for instance: [web-tf].
 Updated [https://www.googleapis.com/compute/v1/projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf].
+```
 
-TERRAFORM PLAN: 
-
+### TERRAFORM PLAN: 
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$  terraform plan
 google_compute_firewall.permitir_http: Refreshing state... [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
 google_compute_instance.web: Refreshing state... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
@@ -210,8 +229,10 @@ Terraform will perform the following actions:
     }
 
 Plan: 0 to add, 1 to change, 0 to destroy.
+```
 
-#EVIDENCIA 4: 
+## EVIDENCIA 4: 
+```
 angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ terraform apply -var tipo_maquina=e2-small
 google_compute_firewall.permitir_http: Refreshing state... [id=projects/nube-practica-1-507220/global/firewalls/permitir-http]
 google_compute_instance.web: Refreshing state... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
@@ -241,7 +262,10 @@ Do you want to perform these actions?
   Only 'yes' will be accepted to approve.
 
   Enter a value: yes
+```
 
+**Aquí el error:**
+```
 google_compute_instance.web: Modifying... [id=projects/nube-practica-1-507220/zones/us-central1-a/instances/web-tf]
 ╷
 │ Error: Changing the machine_type, min_cpu_platform, service_account, enable_display, shielded_instance_config, scheduling.node_affinities, scheduling.max_run_duration or network_interface.[#d].(network/subnetwork/subnetwork_project) or advanced_machine_features on a started instance requires stopping it. To acknowledge this, please set allow_stopping_for_update = true in your config. You can also stop it by setting desired_status = "TERMINATED", but the instance will not be restarted after the update.
@@ -249,4 +273,39 @@ google_compute_instance.web: Modifying... [id=projects/nube-practica-1-507220/zo
 │   with google_compute_instance.web,
 │   on main.tf line 29, in resource "google_compute_instance" "web":
 │   29: resource "google_compute_instance" "web" {
-│ 
+```
+
+## Evidencia 5: 
+### 5.1 Terraform destroy: 
+```
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ time terraform destroy -auto-approve
+Destroy complete! Resources: 2 destroyed.
+```
+### 5.2 Terraform Apply
+```
+angelysofiapg@cloudshell:~/PRACTICA2 (nube-practica-1-507220)$ time terraform apply -auto-approve
+```
+```
+real    0m25.827s
+user    0m5.658s
+sys     0m0.854s
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+ip_externa = "34.71.75.158"
+```
+```
+real    0m41.088s
+user    0m4.818s
+sys     0m0.606s
+```
+
+### 5.3 Comparativa con la practica 1
+
+| Cómo | Tiempo |
+|---|---|
+| Interfaz gráfica (Práctica 1, fase 1) | 2 minutos (estimado) | 
+| `gcloud` (Práctica 1, fase 5) | `real 0m18.098s` |
+| Terraform (hoy) | `real 0m41.088s` | 
+
